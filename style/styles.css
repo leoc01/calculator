@@ -2,26 +2,51 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding-top: 100px;
+	padding-top: 50px;
 }
 
 #calculator {
 	display: flex;
 	flex-direction: column;
+	background-color: gray;
+	padding: 10px;
+	border-radius: 15px;
 }
 
 #screen {
-	min-height: 20px;
+	min-height: 80px;
 	background-color: black;
 	margin-bottom: 10px;
+	border-radius: 10px;
+}
+
+.button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	padding: 25px;
+	background-color: rgb(160, 160, 160);
+	border-radius: 10px;
+	font-size: larger;
+}
+
+.digit {
+	background-color: white;
+}
+
+.operation {
+	background-color: rgb(192, 139, 241);
 }
 
 #backspace {
 	grid-area: backspace;
+	background-color: rgb(255, 255, 106);
 }
 
 #clear {
 	grid-area: clear;
+	background-color: tomato;
 }
 
 #divide {
@@ -90,6 +115,7 @@ body {
 
 #equal {
 	grid-area: equal;
+	background-color: #72af16;
 }
 
 #buttons {
