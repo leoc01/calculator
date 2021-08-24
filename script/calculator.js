@@ -25,7 +25,7 @@ const screen = document.getElementById('screen');
 
 let x = 0;
 let y = 0;
-let screenNumber = 0;
+let screenNumber = '0';
 let operation = 'null';
 
 //some buttons change the behavior depends on where was the last click
@@ -38,27 +38,10 @@ let firstClickOnOperation = true;
 let lastWasEqual = false;
 //newNumber: check if should update the old number or replace.
 let newNumber = true;
+//blockBackspace: allow backspace just in numbers wrote by the user
+let blockBackspace = false;
 
-//start function declarations
-const updateScreen = (newScreenNumber) => {
-	screen.innerHTML = newScreenNumber;
-};
-
-const addFunction = (x, y) => {
-	return x + y;
-};
-
-const subtractFunction = (x, y) => {
-	return x - y;
-};
-
-const multiplyFunction = (x, y) => {
-	return x * y;
-};
-
-const divideFunction = (x, y) => {
-	return x / y;
-};
+//functions declaration
 
 const createNumber = (pressed) => {
 	if (!error) {
@@ -68,15 +51,51 @@ const createNumber = (pressed) => {
 		}
 
 		if (newNumber === true) {
-			screenNumber = 0;
+			screenNumber = '0';
 			newNumber = false;
 		}
 
-		screenNumber = parseInt(`${screenNumber.toString()}${pressed}`);
-		y = screenNumber;
-		updateScreen(screenNumber);
+		if (
+			pressed !== '.' ||
+			(screenNumber.split('.').length < 2 && pressed === '.')
+		) {
+			if (pressed === '.' && screenNumber === '0') {
+				screenNumber = '0.';
+			} else {
+				screenNumber = `${screenNumber}${pressed}`;
+			}
+
+			blockBackspace = false;
+		}
+
+		if (
+			screenNumber.length > 1 &&
+			screenNumber[0] === '0' &&
+			screenNumber.split('.').length < 2
+		) {
+			screenNumber = screenNumber.substring(1);
+		}
+
+		checkSize(screenNumber.length);
+
+		y = parseFloat(screenNumber);
+
 		firstClickOnOperation = true;
 	}
+
+	updateScreen(screenNumber);
+};
+
+//check if the lenght of the number fit in the 8-digit screen
+const checkSize = (size) => {
+	if (size > 8) {
+		error = true;
+		screenNumber = 'err >8dig';
+	}
+};
+
+const updateScreen = (newScreenNumber) => {
+	screen.innerHTML = newScreenNumber;
 };
 
 const setOperation = (key) => {
@@ -87,7 +106,7 @@ const setOperation = (key) => {
 		firstClickOnOperation = false;
 	}
 
-	x = screenNumber;
+	x = parseFloat(screenNumber);
 	newNumber = true;
 	operation = key;
 };
@@ -113,11 +132,27 @@ const doTheMath = () => {
 	return result;
 };
 
+const addFunction = (x, y) => {
+	return (10000000 * x + 10000000 * y) / 10000000;
+};
+
+const subtractFunction = (x, y) => {
+	return (10000000 * x - 10000000 * y) / 10000000;
+};
+
+const multiplyFunction = (x, y) => {
+	return (10000000 * x * (10000000 * y)) / 100000000000000;
+};
+
+const divideFunction = (x, y) => {
+	return ((10000000 * x) / (10000000 * y)) * 100000000000000;
+};
+
 const clearFunction = () => {
 	error = false;
 	x = 0;
 	y = 0;
-	screenNumber = 0;
+	screenNumber = '0';
 	newNumber = true;
 	operation = 'null';
 	updateScreen(screenNumber);
@@ -128,41 +163,50 @@ const equalFunction = () => {
 	if (!error) {
 		let result = doTheMath();
 
+		if (isNaN(result)) {
+			result = y;
+		}
+
 		if (result === Infinity) {
-			result = 'error';
+			result = 'err div0';
 			error = true;
 		}
 
 		x = result;
-		screenNumber = result;
+		screenNumber = `${result}`;
+
+		checkSize(screenNumber.length);
+
 		updateScreen(screenNumber);
 		newNumber = true;
+
+		blockBackspace = true;
 
 		firstClickOnOperation = true;
 	}
 };
 
 const backspaceFunction = () => {
-	if (!error) {
-		screenNumber = parseInt(`${screenNumber.toString()}`.slice(0, -1));
-		if (isNaN(screenNumber)) {
-			screenNumber = 0;
+	if (!error && !blockBackspace) {
+		screenNumber = `${screenNumber}`.slice(0, -1);
+		if (!screenNumber) {
+			screenNumber = '0';
 		}
-		y = screenNumber;
+		y = parseFloat(screenNumber);
 		updateScreen(screenNumber);
 	}
 };
 
 const changeSignFunction = () => {
 	if (!error) {
-		x = screenNumber;
+		x = parseFloat(screenNumber);
 		x = -x;
-		screenNumber = x;
+		screenNumber = `${x}`;
 		updateScreen(screenNumber);
 	}
 };
 
-//start creating event listeners
+//event listeners
 backspaceKey.addEventListener('click', () => backspaceFunction());
 changeSignKey.addEventListener('click', () => changeSignFunction());
 clearKey.addEventListener('click', () => clearFunction());
@@ -178,6 +222,8 @@ equalKey.addEventListener('click', () => {
 	firstClickOnOperation = false;
 });
 
+decimalKey.addEventListener('click', () => createNumber('.'));
+
 zeroKey.addEventListener('click', () => createNumber('0'));
 oneKey.addEventListener('click', () => createNumber('1'));
 twoKey.addEventListener('click', () => createNumber('2'));
@@ -188,3 +234,71 @@ sixKey.addEventListener('click', () => createNumber('6'));
 sevenKey.addEventListener('click', () => createNumber('7'));
 eightKey.addEventListener('click', () => createNumber('8'));
 nineKey.addEventListener('click', () => createNumber('9'));
+
+function callFunction(event) {
+	const key = `${event.keyCode}`;
+
+	switch (key) {
+		case '96':
+			createNumber('0');
+			break;
+		case '97':
+			createNumber('1');
+			break;
+		case '98':
+			createNumber('2');
+			break;
+		case '99':
+			createNumber('3');
+			break;
+		case '100':
+			createNumber('4');
+			break;
+		case '101':
+			createNumber('5');
+			break;
+		case '102':
+			createNumber('6');
+			break;
+		case '103':
+			createNumber('7');
+			break;
+		case '104':
+			createNumber('8');
+			break;
+		case '105':
+			createNumber('9');
+			break;
+		case '67':
+			clearFunction();
+			break;
+		case '110':
+			createNumber('.');
+			break;
+		case '8':
+			backspaceFunction();
+			break;
+		case '107':
+			setOperation('+');
+			break;
+		case '109':
+			setOperation('-');
+			break;
+		case '106':
+			setOperation('*');
+			break;
+		case '111':
+			setOperation('/');
+			break;
+		case '13':
+			equalFunction();
+			lastWasEqual = true;
+			firstClickOnOperation = false;
+			break;
+		case '32':
+			changeSignFunction();
+			break;
+	}
+}
+
+window.addEventListener('keydown', callFunction);
