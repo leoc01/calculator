@@ -32,10 +32,9 @@ let operation = 'null';
 
 //error: block the calculator
 let error = false;
-//firstClickOnOperation: block to call the equalFunction if set operation more than once in a row
+//firstClickOnOperation: block calling equalFunction if click on operations more than once in a row
 let firstClickOnOperation = true;
-//lastWasEqual1: call the clearFunction to clean the calculator if
-//	you did one operation and start a new one clicking on a number
+//lastWasEqual1: call the clearFunction to clean the calculator if you did one operation and start a new one clicking on a number
 let lastWasEqual = false;
 //newNumber: check if should update the old number or replace.
 let newNumber = true;
@@ -166,6 +165,7 @@ const changeSignFunction = () => {
 //start creating event listeners
 backspaceKey.addEventListener('click', () => backspaceFunction());
 changeSignKey.addEventListener('click', () => changeSignFunction());
+clearKey.addEventListener('click', () => clearFunction());
 
 addKey.addEventListener('click', () => setOperation('+'));
 subtractKey.addEventListener('click', () => setOperation('-'));
@@ -177,7 +177,6 @@ equalKey.addEventListener('click', () => {
 	lastWasEqual = true;
 	firstClickOnOperation = false;
 });
-clearKey.addEventListener('click', () => clearFunction());
 
 zeroKey.addEventListener('click', () => createNumber('0'));
 oneKey.addEventListener('click', () => createNumber('1'));
