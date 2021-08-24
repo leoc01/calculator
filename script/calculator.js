@@ -103,9 +103,9 @@ const setOperation = (key) => {
 
 	if (firstClickOnOperation && operation !== 'null') {
 		equalFunction();
-		firstClickOnOperation = false;
 	}
 
+	firstClickOnOperation = false;
 	x = parseFloat(screenNumber);
 	newNumber = true;
 	operation = key;
@@ -145,7 +145,7 @@ const multiplyFunction = (x, y) => {
 };
 
 const divideFunction = (x, y) => {
-	return ((10000000 * x) / (10000000 * y)) * 100000000000000;
+	return (10000000 * x) / (10000000 * y);
 };
 
 const clearFunction = () => {
