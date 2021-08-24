@@ -23,28 +23,6 @@ const equalKey = document.getElementById('equal');
 
 const screen = document.getElementById('screen');
 
-let x = 0;
-let y = 0;
-let screenNumber = 0;
-let operation = 'null';
-
-//some buttons change the behavior depends on where was the last click
-
-//error: block the calculator
-let error = false;
-//firstClickOnOperation: block to call the equalFunction if set operation more than once in a row
-let firstClickOnOperation = true;
-//lastWasEqual1: call the clearFunction to clean the calculator if
-//	you did one operation and start a new one clicking on a number
-let lastWasEqual = false;
-//newNumber: check if should update the old number or replace.
-let newNumber = true;
-
-//start function declarations
-const updateScreen = (newScreenNumber) => {
-	screen.innerHTML = newScreenNumber;
-};
-
 const addFunction = (x, y) => {
 	return x + y;
 };
@@ -59,38 +37,6 @@ const multiplyFunction = (x, y) => {
 
 const divideFunction = (x, y) => {
 	return x / y;
-};
-
-const createNumber = (pressed) => {
-	if (!error) {
-		if (lastWasEqual) {
-			clearFunction();
-			lastWasEqual = false;
-		}
-
-		if (newNumber === true) {
-			screenNumber = 0;
-			newNumber = false;
-		}
-
-		screenNumber = parseInt(`${screenNumber.toString()}${pressed}`);
-		y = screenNumber;
-		updateScreen(screenNumber);
-		firstClickOnOperation = true;
-	}
-};
-
-const setOperation = (key) => {
-	lastWasEqual = false;
-
-	if (firstClickOnOperation && operation !== 'null') {
-		equalFunction();
-		firstClickOnOperation = false;
-	}
-
-	x = screenNumber;
-	newNumber = true;
-	operation = key;
 };
 
 const doTheMath = () => {
@@ -114,36 +60,20 @@ const doTheMath = () => {
 	return result;
 };
 
-const clearFunction = () => {
-	error = false;
-	x = 0;
-	y = 0;
-	screenNumber = 0;
-	newNumber = true;
-	operation = 'null';
-	updateScreen(screenNumber);
-	firstClickOnOperation = true;
-};
-
-const equalFunction = () => {
+const createNumber = (pressed) => {
 	if (!error) {
-		let result = doTheMath();
-
-		if (result === Infinity) {
-			result = 'error';
-			error = true;
+		if (newNumber === true) {
+			screenNumber = 0;
+			newNumber = false;
 		}
-
-		x = result;
-		screenNumber = result;
+		screenNumber = parseInt(`${screenNumber.toString()}${pressed}`);
+		y = screenNumber;
 		updateScreen(screenNumber);
-		newNumber = true;
-
 		firstClickOnOperation = true;
 	}
 };
 
-const backspaceFunction = () => {
+backspaceKey.addEventListener('click', () => {
 	if (!error) {
 		screenNumber = parseInt(`${screenNumber.toString()}`.slice(0, -1));
 		if (isNaN(screenNumber)) {
@@ -152,30 +82,29 @@ const backspaceFunction = () => {
 		y = screenNumber;
 		updateScreen(screenNumber);
 	}
-};
-
-const changeSignFunction = () => {
+});
+changeSignKey.addEventListener('click', () => {
 	if (!error) {
 		x = screenNumber;
 		x = -x;
 		screenNumber = x;
 		updateScreen(screenNumber);
 	}
-};
-
-//start creating event listeners
-backspaceKey.addEventListener('click', () => backspaceFunction());
-changeSignKey.addEventListener('click', () => changeSignFunction());
-
-addKey.addEventListener('click', () => setOperation('+'));
-subtractKey.addEventListener('click', () => setOperation('-'));
-multiplyKey.addEventListener('click', () => setOperation('*'));
-divideKey.addEventListener('click', () => setOperation('/'));
-
+});
+addKey.addEventListener('click', () => {
+	setOperation('+');
+});
+subtractKey.addEventListener('click', () => {
+	setOperation('-');
+});
+multiplyKey.addEventListener('click', () => {
+	setOperation('*');
+});
+divideKey.addEventListener('click', () => {
+	setOperation('/');
+});
 equalKey.addEventListener('click', () => {
 	equalFunction();
-	lastWasEqual = true;
-	firstClickOnOperation = false;
 });
 clearKey.addEventListener('click', () => clearFunction());
 
